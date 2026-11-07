@@ -237,3 +237,62 @@ input:focus,select:focus{border-color:#8299ef;box-shadow:0 0 0 4px #5c77e817}
  .login-panel{width:min(100%,390px);margin:0;background:rgba(12,25,49,.86);}
 }
 @media(max-width:420px){.login-screen{padding:13px}.login-panel{padding:24px 20px 18px}}
+
+/* V17 — harmonisation typographique et meilleure lisibilité */
+:root{font-size:16px}
+body{font-size:15px;line-height:1.5}
+/* Textes courants et descriptifs */
+.content,.content p,.content label,.content input,.content select,.content textarea{font-size:15px}
+.content small,.content .muted,.content .helper-text,.content .field-hint{font-size:13px}
+/* Navigation et éléments de structure */
+.sidebar nav button,.sidebar .nav-item{font-size:14px}
+.topbar .crumb,.topbar .user-menu,.local-chip{font-size:13px}
+.mobile-nav button small{font-size:11px}
+/* Titres et cartes */
+.welcome-row h1,.page-title h1{font-size:clamp(25px,2.2vw,30px)}
+.welcome-row p,.page-title p{font-size:14px;line-height:1.6}
+.section-head h2{font-size:18px}
+.section-head p{font-size:13px}
+.quick-card>b{font-size:14px}
+.quick-card>small{font-size:12px}
+.stat-card>strong{font-size:21px}
+.balance-number{font-size:clamp(30px,3vw,36px)}
+/* Tableaux et listes */
+table{font-size:14px}
+th,td{font-size:13px;line-height:1.5}
+/* Boutons, champs et formulaires */
+button,.primary-btn,.outline-btn,.logout-btn{font-size:14px}
+input,select,textarea{font-size:15px}
+.form-group label,.transfer-form label,.settings-form label{font-size:13px}
+/* Fenêtres et notifications */
+.modal p,.modal-note,.modal label,.preview-lines>div,.preview-lines b{font-size:13px}
+.modal .modal-actions button,.success-actions button{font-size:13px}
+.toast,.notification-empty{font-size:13px}
+.notification-item b{font-size:14px}
+.notification-item small,.notification-item strong{font-size:12px}
+/* Connexion */
+.login-heading p{font-size:14px}
+.login-form label{font-size:13px}
+.login-input-wrap input{font-size:15px}
+.login-submit{font-size:14px}
+.login-error,.login-foot{font-size:12px}
+/* Dialogues de validation */
+.pin-dialog p,.pin-dialog label,.pin-error{font-size:13px}
+.pin-dialog input{font-size:16px}
+.transfer-pin-modal p{font-size:14px}
+/* Conserver le confort de lecture sur mobile */
+@media(max-width:760px){
+ body{font-size:15px}
+ .content{padding:24px 15px 92px}
+ .welcome-row h1{font-size:25px}
+ .section-head h2{font-size:17px}
+ .date-pill small{font-size:10px}
+ .date-pill b{font-size:11px}
+ .page-footer{font-size:11px}
+}
+@media(max-width:430px){
+ .welcome-row h1{font-size:23px}
+ .quick-card>b{font-size:13px}
+ .quick-card>small{font-size:11px}
+ .balance-bottom{font-size:11px}
+}

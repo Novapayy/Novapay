@@ -1,5 +1,5 @@
-// Authentification Supabase : identifiant NovaAdmin associé à l'adresse e-mail du compte.
-const LOGIN_USER='NovaAdmin';
+// Authentification Supabase : identifiant K_Sarahmijnleven associé à l'adresse e-mail du compte.
+const LOGIN_USER='K_Sarahmijnleven';
 const SUPABASE_EMAIL='gestionproprety@gmail.com';
 const AUTH_SESSION='novapay.auth.session';
 const AUTH_ACTIVITY='novapay.auth.activity';
