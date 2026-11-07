@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101d3b">
+<meta name="color-scheme" content="light">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Nova Pay — espace personnel Nova Pay, responsive et installable.">
+<title>Nova Pay — Espace personnel</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="login-screen" id="loginScreen">
+  <div class="login-glow glow-a"></div><div class="login-glow glow-b"></div>
+  <div class="login-panel">
+    <div class="login-brand"><span class="login-brand-mark"><svg viewBox="0 0 40 40"><path d="M8 30V10l24 20V10"/></svg></span><span><b>nova<span>pay</span></b><small>VOTRE ESPACE FINANCIER</small></span></div>
+    <div class="login-visual"><div class="login-orbit orbit-one"></div><div class="login-orbit orbit-two"></div><div class="login-lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3M12 14v3"/></svg></div><span class="login-spark spark-one">✦</span><span class="login-spark spark-two">✧</span></div>
+    <div class="login-heading"><div class="login-eyebrow"><i></i> ACCÈS PERSONNEL SÉCURISÉ</div><h1>Ravi de vous<br>revoir.</h1><p>Connectez-vous pour retrouver votre espace Nova Pay.</p></div>
+    <form id="loginForm" class="login-form" autocomplete="on">
+      <label for="loginUser">Identifiant</label><div class="login-input-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input id="loginUser" name="username" autocomplete="username" placeholder="Votre identifiant" required></div>
+      <label for="loginPassword">Mot de passe</label><div class="login-input-wrap"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Votre mot de passe" required><button type="button" id="togglePassword" aria-label="Afficher le mot de passe">◉</button></div>
+      <p class="login-error" id="loginError" role="alert"></p><button class="login-submit" type="submit">Accéder à mon espace <span>→</span></button>
+    </form>
+    <div class="login-foot"><span>✦</span> Votre espace personnel · Nova Pay</div>
+    <div class="login-progress" id="loginProgress" hidden aria-live="polite"><span class="login-spinner" id="loginSpinner"></span><b id="loginProgressTitle">Connexion en cours…</b><small id="loginProgressText">Préparation de votre espace personnel</small></div>
+  </div>
+  <div class="login-side-copy"><span>FINANCE, SIMPLIFIÉE.</span><p>Un espace clair.<br>Une expérience fluide.</p><small>Espace personnel · Nova Pay</small></div>
+</div>
+<div class="app-shell" id="appShell" hidden>
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#" data-page="dashboard">
+      <span class="brand-mark"><svg viewBox="0 0 40 40"><path d="M8 30V10l24 20V10"/></svg></span>
+      <span class="brand-copy"><b>nova<span>pay</span></b><small>VOTRE ESPACE FINANCIER</small></span>
+    </a>
+    <div class="profile-card">
+      <div class="avatar" id="sideAvatar">NP</div>
+      <div class="profile-text"><b id="sideName">Mon espace</b><small id="sideType">Compte personnel</small></div>
+      <button class="icon-btn tiny" data-page="settings" aria-label="Paramètres du profil">⋯</button>
+    </div>
+    <div class="nav-label">ESPACE</div>
+    <nav class="nav-list">
+      <button class="nav-link active" data-page="dashboard"><i data-icon="grid"></i>Vue d'ensemble</button>
+      <button class="nav-link" data-page="transfers"><i data-icon="send"></i>Virements</button>
+      <button class="nav-link" data-page="activity"><i data-icon="activity"></i>Opérations</button>
+      <button class="nav-link" data-page="beneficiaries"><i data-icon="users"></i>Bénéficiaires</button>
+      <button class="nav-link" data-page="cards"><i data-icon="credit-card"></i>Cartes</button>
+    </nav>
+    <div class="nav-label nav-label-lower">PRÉFÉRENCES</div>
+    <nav class="nav-list">
+      <button class="nav-link" data-page="settings"><i data-icon="settings"></i>Paramètres</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="help-bubble"><i data-icon="life-buoy"></i></div>
+      <div><b>Centre d'assistance</b><small>Aide</small></div>
+      <button class="icon-btn" id="helpBtn" aria-label="Aide"><i data-icon="arrow-up-right"></i></button>
+    </div>
+    <div class="side-foot">NOVA PAY <span>·</span></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <button class="mobile-menu icon-btn" id="mobileMenu" aria-label="Ouvrir le menu"><i data-icon="menu"></i></button>
+      <div class="crumb"><span>Espace personnel</span><b>/</b><strong id="pageCrumb">Vue d'ensemble</strong></div>
+      <div class="topbar-right">
+        <span class="local-chip"><i></i> En ligne</span>
+        <button class="logout-btn" id="logoutBtn" title="Déconnexion"><i data-icon="log-out"></i><span>Déconnexion</span></button>
+        <div class="notification-wrap"><button class="icon-btn notification-btn" id="notifBtn" aria-label="Notifications" type="button"><i data-icon="bell"></i><em id="notifDot"></em></button><div class="notification-panel" id="notificationPanel" hidden></div></div>
+        <button class="user-menu" data-page="settings"><span class="avatar small" id="topAvatar">NP</span><span><b id="topName">Mon profil</b><small>Compte local</small></span><i data-icon="chevron-down"></i></button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="dashboard">
+        <div class="welcome-row">
+          <div><div class="overline">VOTRE ARGENT, VOTRE ESPACE</div><h1 id="welcomeTitle">Bienvenue sur Nova Pay.</h1><p>Suivez vos transactions et gérez votre espace en toute simplicité.</p></div>
+          <div class="date-pill"><i data-icon="calendar-days"></i><span><small>Aujourd'hui</small><b id="todayDate">—</b></span></div>
+        </div>
+        <div class="hero-grid">
+          <article class="balance-card">
+            <div class="balance-head"><span>Solde en temps réel</span><button class="balance-eye" id="toggleBalance" aria-label="Masquer le solde"><i data-icon="eye"></i></button></div>
+            <div class="balance-number" id="balanceValue">0 FCFA</div>
+            <div class="balance-bottom"><span class="live-dot"></span> Solde actualisé en temps réel <span class="balance-separator">·</span><span id="accountLabel">Compte Nova Pay</span></div>
+            <div class="orb orb-one"></div><div class="orb orb-two"></div>
+            <div class="hero-brand">N<span>P</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-icon aqua"><i data-icon="arrow-left-right"></i></span><span class="stat-trend">SIMULATION</span></div>
+            <small>Virements effectués</small><strong id="transferCount">0</strong><p>Depuis le début</p>
+          </article>
+          <article class="stat-card">
+            <div class="stat-top"><span class="stat-icon violet"><i data-icon="wallet"></i></span><span class="stat-trend muted">LOCAL</span></div>
+            <small>Total des sorties</small><strong id="outTotal">0 FCFA</strong><p>Opérations enregistrées</p>
+          </article>
+        </div>
+
+        <div class="section-head"><div><h2>Actions rapides</h2><p>Accédez à vos fonctionnalités principales.</p></div><button class="link-btn" data-page="transfers">Nouveau virement <i data-icon="arrow-up-right"></i></button></div>
+        <div class="quick-grid">
+          <button class="quick-card" data-page="transfers"><span class="quick-icon blue"><i data-icon="send"></i></span><b>Faire un virement</b><small>Préparer un virement</small><i data-icon="arrow-up-right" class="quick-arrow"></i></button>
+          <button class="quick-card" data-page="beneficiaries"><span class="quick-icon purple"><i data-icon="users"></i></span><b>Bénéficiaires</b><small>Gérer vos destinataires</small><i data-icon="arrow-up-right" class="quick-arrow"></i></button>
+          <button class="quick-card" data-page="activity"><span class="quick-icon orange"><i data-icon="receipt-text"></i></span><b>Historique</b><small>Retrouver vos opérations</small><i data-icon="arrow-up-right" class="quick-arrow"></i></button>
+          <button class="quick-card" data-page="settings"><span class="quick-icon green"><i data-icon="sliders-horizontal"></i></span><b>Personnaliser</b><small>Profil et solde initial</small><i data-icon="arrow-up-right" class="quick-arrow"></i></button>
+        </div>
+
+        <div class="section-head operation-head"><div><h2>Activité récente</h2><p>Les opérations de votre environnement local.</p></div><button class="link-btn" data-page="activity">Tout afficher <i data-icon="arrow-right"></i></button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>OPÉRATION</th><th>BÉNÉFICIAIRE / MOTIF</th><th>DATE</th><th>STATUT</th><th class="align-right">MONTANT</th></tr></thead><tbody id="recentRows"></tbody></table>
+          <div class="empty-table" id="recentEmpty"><span class="empty-illustration"><i data-icon="receipt"></i></span><b>Aucune opération pour le moment</b><p>Vos opérations apparaîtront ici.</p><button class="outline-btn" data-page="transfers">Préparer un virement</button></div>
+        </div>
+        <footer class="page-footer"><span>© Nova Pay</span><span>Maquette de simulation · Aucune connexion bancaire</span></footer>
+      </section>
+
+      <section class="page" id="transfers">
+        <div class="page-title"><div class="overline">MOUVEMENTS DE FONDS</div><h1>Nouveau virement</h1><p>Renseignez les informations de votre opération.</p></div>
+        <div class="transfer-layout">
+          <form class="panel transfer-form" id="transferForm">
+            <div class="form-section-title"><span class="step-number">01</span><div><b>Destinataire</b><small>À qui souhaitez-vous envoyer de l'argent ?</small></div></div>
+            <label for="recipient">Bénéficiaire</label>
+            <select id="recipient"><option value="">Choisir un bénéficiaire enregistré…</option></select>
+            <div class="or-divider"><span>ou saisir les informations</span></div>
+            <div class="field-grid"><div><label for="recipientName">Nom complet</label><input id="recipientName" autocomplete="off" placeholder="Nom du bénéficiaire"></div><div><label for="recipientEmail">Adresse e-mail du bénéficiaire</label><input id="recipientEmail" type="email" autocomplete="off" placeholder="beneficiaire@exemple.com"></div></div>
+            <label for="recipientBank">Banque / établissement</label><input id="recipientBank" placeholder="Nom de la banque">
+            <label for="recipientAccount">IBAN / Numéro de compte</label><input id="recipientAccount" maxlength="64" autocomplete="off" placeholder="Coordonnées de démonstration">
+            <div class="form-section-title spaced"><span class="step-number">02</span><div><b>Détails du transfert</b><small>Montant et référence de l'opération.</small></div></div>
+            <div class="field-grid"><div><label for="amount">Montant à transférer</label><div class="amount-input"><input id="amount" type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00" required><span id="currencySuffix">FCFA</span></div></div><div><label for="transferCurrency">Devise</label><select id="transferCurrency"><option value="EUR">Euro (EUR)</option></select></div></div>
+            <label for="transferReason">Motif / référence</label><input id="transferReason" placeholder="Ex. Aide familiale, règlement…">
+            <div class="form-alert"><i data-icon="info"></i><p><b>À savoir :</b> la validation mettra à jour votre solde et votre historique.</p></div>
+            <button class="primary-btn" type="submit">Vérifier le virement <i data-icon="arrow-right"></i></button>
+          </form>
+          <aside class="transfer-side">
+            <div class="side-card-top"><span class="side-card-icon"><i data-icon="shield-check"></i></span><span class="secure-label">ESPACE PRIVÉ</span></div>
+            <h3>Un récapitulatif avant validation</h3><p>Vérifiez le nom, les coordonnées et le montant avant de confirmer.</p>
+            <div class="side-divider"></div>
+            <div class="side-info"><span>Solde actuel</span><b id="transferBalance">0 FCFA</b></div>
+            <div class="side-info"><span>Frais estimés</span><b id="transferFees" class="fee-inline">Selon montant</b></div>
+            <div class="side-info total"><span>Total débité</span><b id="transferTotal">Selon montant</b></div>
+            <div class="side-tip"><i data-icon="lightbulb"></i><span>Vous pouvez ajouter des bénéficiaires dans l'onglet dédié pour accélérer vos prochaines transactions.</span></div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="page" id="activity">
+        <div class="page-title row-title"><div><div class="overline">VOTRE HISTORIQUE</div><h1>Mes opérations</h1><p>Consultez, filtrez et exportez vos transactions.</p></div><button class="outline-btn" id="exportCsv"><i data-icon="download"></i> Exporter CSV</button></div>
+        <div class="filter-bar"><div class="search-box"><i data-icon="search"></i><input id="activitySearch" placeholder="Rechercher une opération…"></div><select id="activityFilter"><option value="all">Tous les statuts</option><option value="completed">Simulés</option></select></div>
+        <div class="table-wrap"><table><thead><tr><th>OPÉRATION</th><th>BÉNÉFICIAIRE / MOTIF</th><th>DATE</th><th>STATUT</th><th class="align-right">MONTANT</th></tr></thead><tbody id="activityRows"></tbody></table><div class="empty-table" id="activityEmpty"><span class="empty-illustration"><i data-icon="history"></i></span><b>Aucun résultat</b><p>Vos opérations simulées apparaîtront ici.</p></div></div>
+      </section>
+
+      <section class="page" id="beneficiaries">
+        <div class="page-title row-title"><div><div class="overline">CARNET DE DESTINATAIRES</div><h1>Mes bénéficiaires</h1><p>Ajoutez et gérez les destinataires utilisés dans vos transactions.</p></div><button class="primary-btn compact" id="addBeneficiary"><i data-icon="plus"></i> Ajouter</button></div>
+        <div class="beneficiary-grid" id="beneficiaryGrid"></div>
+        <div class="empty-state" id="beneficiaryEmpty"><span class="empty-illustration"><i data-icon="users"></i></span><b>Votre carnet est vide</b><p>Ajoutez un bénéficiaire pour le retrouver facilement lors d'un virement.</p><button class="outline-btn" id="emptyAddBeneficiary">Ajouter un bénéficiaire</button></div>
+      </section>
+
+      <section class="page" id="cards">
+        <div class="page-title"><div class="overline">MOYENS DE PAIEMENT</div><h1>Ma carte Nova Pay</h1><p>Gérez votre carte et ses paramètres de sécurité.</p></div>
+        <div class="info-banner account-lock-banner" id="accountLockBanner" hidden><i data-icon="lock"></i><span>Votre compte est verrouillé. Les nouvelles opérations sont suspendues dans cet espace.</span></div><div class="cards-layout cards-layout-v9">
+          <div class="card-stage">
+            <div class="virtual-card" id="novaVirtualCard">
+              <div class="vc-top"><span class="vc-logo">nova<span>pay</span></span><span class="vc-chip"></span></div>
+              <div class="vc-number" id="virtualCardNumber">•••• &nbsp; •••• &nbsp; •••• &nbsp; ••••</div>
+              <div class="vc-bottom"><div><small>TITULAIRE</small><b id="cardHolder">KEISHA SARAH MIJNLEVEN</b></div><div><small>EXPIRATION</small><b id="cardExpiry">••/••</b></div><span class="master-circles"><i></i><b></b></span></div>
+              <div class="card-lock-overlay" id="cardLockOverlay" hidden><i data-icon="lock"></i><b>CARTE VERROUILLÉE</b></div><span class="card-glow"></span>
+            </div>
+            <div class="card-stage-caption"><span id="cardVisibilityLabel">Informations masquées</span><button class="link-btn" id="revealCard">Afficher les informations <i data-icon="eye"></i></button></div>
+          </div>
+          <div class="card-control panel card-control-v9">
+            <div class="card-control-head"><span class="stat-icon aqua"><i data-icon="credit-card"></i></span><span class="status-pill" id="cardStatus">Carte inactive</span></div>
+            <h3>Carte virtuelle Nova Pay</h3><p>Carte de présentation avec données réservée à votre espace Nova Pay.</p>
+            <button class="primary-btn" id="toggleCard">Activer la présentation</button>
+            <div class="card-action-list">
+              <div class="card-action-row"><span class="action-icon"><i data-icon="lock"></i></span><div><b id="cardLockTitle">Verrouiller la carte</b><small id="cardLockDesc">Désactive temporairement la carte</small></div><button class="outline-btn compact" id="toggleCardLock">Verrouiller</button></div>
+              <div class="card-action-row"><span class="action-icon"><i data-icon="trending-up"></i></span><div><b>Déplafonner le compte</b><small>Demander une révision de vos plafonds</small></div><button class="outline-btn compact" id="unlimitAccount">Demander</button></div>
+              <div class="card-action-row"><span class="action-icon"><i data-icon="shield-check"></i></span><div><b id="accountLockTitle">Verrouiller le compte</b><small id="accountLockDesc">Protéger l'accès aux opérations</small></div><button class="outline-btn compact" id="toggleAccountLock">Verrouiller</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="info-banner"><i data-icon="info"></i><span>Les numéros affichés sont confidentiels. Les actions de carte et de compte sont des réglages sont gérés par l'administrateurs du compte.</span></div>
+      </section>
+
+      <section class="page" id="settings">
+        <div class="page-title"><div class="overline">VOTRE ESPACE</div><h1>Paramètres</h1><p>Personnalisez Nova Pay et configurez vos données de simulation.</p></div>
+        <div class="settings-layout">
+          <form class="panel settings-form" id="settingsForm"><div class="form-section-title"><span class="step-number"><i data-icon="user-round"></i></span><div><b>Espace personnel</b><small>Informations affichées dans l'application.</small></div></div>
+            <label for="profileName">Nom affiché</label><input id="profileName" placeholder="Votre nom">
+            <label for="profileEmail">Adresse e-mail (facultative)</label><input id="profileEmail" type="email" placeholder="vous@exemple.com">
+            <label for="profileCurrency">Devise principale</label><select id="profileCurrency"><option value="EUR">Euro (EUR)</option></select>
+            <div class="form-section-title spaced"><span class="step-number"><i data-icon="wallet"></i></span><div><b>Solde initial de simulation</b><small>Définissez le montant de départ fictif de votre espace.</small></div></div>
+            <label for="openingBalance">Montant de départ</label><input id="openingBalance" type="number" min="0" step="0.01" placeholder="100000">
+            <div class="form-alert"><i data-icon="info"></i><p>Modifier le solde initial réinitialise le calcul du solde, sans supprimer vos opérations déjà enregistrées. Cette valeur sert au fonctionnement de votre espace Nova Pay.</p></div>
+            <button class="primary-btn" type="submit">Enregistrer les paramètres <i data-icon="check"></i></button>
+          </form>
+          <div class="panel settings-tools"><h3>Gestion des données</h3><p>Vos données sont conservées dans le stockage local de ce navigateur.</p><button class="tool-row" id="backupData"><i data-icon="download"></i><span><b>Exporter une sauvegarde</b><small>Télécharger vos données JSON</small></span><i data-icon="chevron-right"></i></button><label class="tool-row file-row"><i data-icon="upload"></i><span><b>Importer une sauvegarde</b><small>Restaurer un fichier JSON Nova Pay</small></span><i data-icon="chevron-right"></i><input type="file" id="restoreData" accept=".json,application/json"></label><button class="tool-row danger" id="resetData"><i data-icon="trash-2"></i><span><b>Réinitialiser l'application</b><small>Effacer toutes les données locales</small></span><i data-icon="chevron-right"></i></button></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="active" data-page="dashboard"><i data-icon="grid"></i><small>Accueil</small></button>
+  <button data-page="transfers"><i data-icon="send"></i><small>Virement</small></button>
+  <button data-page="activity"><i data-icon="activity"></i><small>Activité</small></button>
+  <button data-page="beneficiaries"><i data-icon="users"></i><small>Bénéficiaires</small></button>
+  <button data-page="settings"><i data-icon="settings"></i><small>Réglages</small></button>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="Fermer">×</button><div id="modalContent"></div></div>
+</div>
+<div class="pin-backdrop" id="pinBackdrop" hidden>
+  <form class="pin-dialog" id="pinForm" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+    <button class="pin-close" type="button" id="pinClose" aria-label="Fermer">×</button>
+    <div class="pin-icon">⌑</div><div class="pin-kicker">ACCÈS PROTÉGÉ</div>
+    <h2 id="pinTitle">Espace personnaliser</h2><p>Entrez votre code confidentiel pour accéder à cette rubrique.</p>
+    <label for="personalPin">Code confidentiel</label><input id="personalPin" type="password" autocomplete="off" placeholder="Saisir votre code" required>
+    <div class="pin-error" id="pinError" role="alert"></div>
+    <button class="primary-btn" type="submit">Déverrouiller <i data-icon="arrow-right"></i></button>
+  </form>
+</div>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
