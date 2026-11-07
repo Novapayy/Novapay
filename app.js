@@ -1,34 +1,38 @@
-// Verrouillage d'accès local Nova Pay. Pour une sécurité forte sur un site public, utiliser une authentification serveur.
+// Authentification Supabase : identifiant NovaAdmin associé à l'adresse e-mail du compte.
 const LOGIN_USER='NovaAdmin';
-const LOGIN_HASH='a732459626cf1550fb51140cc521b7bfa3a42107bef9e7528fa3b9126d1701f4';
+const SUPABASE_EMAIL='gestionproprety@gmail.com';
 const AUTH_SESSION='novapay.auth.session';
 const AUTH_ACTIVITY='novapay.auth.activity';
 const AUTH_IDLE_MS=30*60*1000;
-function endAuth(){sessionStorage.removeItem(AUTH_SESSION);sessionStorage.removeItem(AUTH_ACTIVITY);showLogin();}
+const supabaseClient = window.supabase.createClient(window.NOVA_SUPABASE_URL, window.NOVA_SUPABASE_PUBLISHABLE_KEY);
+let cloudReady=false, cloudSaveTimer=null, cloudSaving=Promise.resolve();
+function endAuth(){sessionStorage.removeItem(AUTH_SESSION);sessionStorage.removeItem(AUTH_ACTIVITY);supabaseClient.auth.signOut().catch(console.error);showLogin();}
 function touchAuth(){if(sessionStorage.getItem(AUTH_SESSION)==='ok')sessionStorage.setItem(AUTH_ACTIVITY,String(Date.now()));}
-if(sessionStorage.getItem(AUTH_SESSION)==='ok' && Date.now()-Number(sessionStorage.getItem(AUTH_ACTIVITY)||0)>AUTH_IDLE_MS){endAuth();}
+if(sessionStorage.getItem(AUTH_SESSION)==='ok' && Date.now()-Number(sessionStorage.getItem(AUTH_ACTIVITY)||0)>AUTH_IDLE_MS){sessionStorage.removeItem(AUTH_SESSION);sessionStorage.removeItem(AUTH_ACTIVITY);}
 const loginScreen=document.getElementById('loginScreen');
 const appShell=document.getElementById('appShell');
 function showApp(){loginScreen.hidden=true;appShell.hidden=false;}
 function showLogin(){appShell.hidden=true;loginScreen.hidden=false;document.getElementById('loginPassword').value='';document.getElementById('loginError').textContent='';}
-if(sessionStorage.getItem(AUTH_SESSION)==='ok') showApp(); else showLogin();
+showLogin();
 document.getElementById('loginForm').addEventListener('submit',async e=>{
  e.preventDefault();const user=document.getElementById('loginUser').value.trim();const pass=document.getElementById('loginPassword').value;
- if(!window.crypto?.subtle){document.getElementById('loginError').textContent='Connexion sécurisée indisponible sur ce navigateur. Ouvrez Nova Pay via HTTPS.';return;}
- const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pass)))).map(b=>b.toString(16).padStart(2,'0')).join('');
- if(user===LOGIN_USER && digest===LOGIN_HASH){
-   const form=document.getElementById('loginForm'), progress=document.getElementById('loginProgress'), title=document.getElementById('loginProgressTitle'), detail=document.getElementById('loginProgressText'), spinner=document.getElementById('loginSpinner');
-   form.querySelector('button[type=submit]').disabled=true; progress.hidden=false; title.textContent='Connexion en cours…'; detail.textContent='Préparation de votre espace personnel';
-   await new Promise(resolve=>setTimeout(resolve,3000));
-   spinner.classList.add('done'); title.textContent='Connexion réussie'; detail.textContent='Bienvenue dans votre espace Nova Pay';
-   await new Promise(resolve=>setTimeout(resolve,850));
-   sessionStorage.setItem(AUTH_SESSION,'ok');sessionStorage.setItem(AUTH_ACTIVITY,String(Date.now()));document.getElementById('loginError').textContent='';
-   progress.hidden=true;spinner.classList.remove('done');form.querySelector('button[type=submit]').disabled=false;showApp();document.getElementById('loginPassword').value='';
- }
- else{document.getElementById('loginError').textContent='Identifiant ou mot de passe incorrect.';document.getElementById('loginPassword').value='';}
+ const error=document.getElementById('loginError');
+ if(user!==LOGIN_USER){error.textContent='Identifiant ou mot de passe incorrect.';return;}
+ const form=document.getElementById('loginForm'), progress=document.getElementById('loginProgress'), title=document.getElementById('loginProgressTitle'), detail=document.getElementById('loginProgressText'), spinner=document.getElementById('loginSpinner');
+ const submit=form.querySelector('button[type=submit]');submit.disabled=true;progress.hidden=false;title.textContent='Connexion en cours…';detail.textContent='Vérification sécurisée de vos accès';
+ try{
+   const {data,error:authError}=await supabaseClient.auth.signInWithPassword({email:SUPABASE_EMAIL,password:pass});
+   if(authError) throw authError;
+   title.textContent='Chargement de votre espace…';detail.textContent='Récupération de vos données synchronisées';
+   await loadCloudState();
+   spinner.classList.add('done');title.textContent='Connexion réussie';detail.textContent='Bienvenue dans votre espace Nova Pay';
+   await new Promise(resolve=>setTimeout(resolve,450));
+   sessionStorage.setItem(AUTH_SESSION,'ok');sessionStorage.setItem(AUTH_ACTIVITY,String(Date.now()));error.textContent='';
+   progress.hidden=true;spinner.classList.remove('done');submit.disabled=false;showApp();document.getElementById('loginPassword').value='';renderAll();
+ }catch(err){console.error('Supabase login:',err);error.textContent=err.message?.includes('Invalid login credentials')?'Identifiant ou mot de passe incorrect. Vérifiez le mot de passe du compte Supabase.':'Connexion impossible à Supabase. Vérifiez votre connexion et la configuration du projet.';progress.hidden=true;spinner.classList.remove('done');submit.disabled=false;}
 });
 document.getElementById('togglePassword').addEventListener('click',()=>{const f=document.getElementById('loginPassword');f.type=f.type==='password'?'text':'password';});
-document.getElementById('logoutBtn').addEventListener('click',()=>{sessionStorage.removeItem('novapay.personalize.unlocked');endAuth();showLogin();document.getElementById('loginUser').value='';document.getElementById('loginUser').focus();});
+document.getElementById('logoutBtn').addEventListener('click',()=>{cloudReady=false;sessionStorage.removeItem('novapay.personalize.unlocked');endAuth();showLogin();document.getElementById('loginUser').value='';document.getElementById('loginUser').focus();});
 
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const ICONS={
@@ -92,7 +96,34 @@ function load(){
   return merged;
  }catch{return fresh();}
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));renderAll();}catch(err){console.error(err);toast('Impossible d’enregistrer : espace de stockage indisponible. Exportez vos données.');}}
+async function loadCloudState(){
+  const {data,error}=await supabaseClient.from('account_settings').select('settings').maybeSingle();
+  if(error) throw error;
+  const remote=data?.settings?.novapay_state;
+  if(remote && typeof remote==='object'){
+    state={...fresh(),...remote,profile:{...fresh().profile,...(remote.profile||{})}};
+    localStorage.setItem(KEY,JSON.stringify(state));
+  }else{
+    // Première connexion : importer les données déjà présentes sur cet appareil.
+    const local=load();state={...fresh(),...local,profile:{...fresh().profile,...(local.profile||{})}};
+    const {error:writeError}=await supabaseClient.from('account_settings').upsert({user_id:(await supabaseClient.auth.getUser()).data.user.id,settings:{novapay_state:state},updated_at:new Date().toISOString()},{onConflict:'user_id'});
+    if(writeError) throw writeError;
+  }
+  cloudReady=true;localStorage.setItem(KEY,JSON.stringify(state));
+}
+function queueCloudSave(){
+  if(!cloudReady)return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(()=>{
+    const snapshot=JSON.parse(JSON.stringify(state));
+    cloudSaving=cloudSaving.then(async()=>{
+      const {data:{user}}=await supabaseClient.auth.getUser();if(!user)return;
+      const {error}=await supabaseClient.from('account_settings').upsert({user_id:user.id,settings:{novapay_state:snapshot},updated_at:new Date().toISOString()},{onConflict:'user_id'});
+      if(error){console.error('Sauvegarde Supabase:',error);toast('Synchronisation impossible. Vérifiez votre connexion.');}
+    }).catch(err=>console.error(err));
+  },500);
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));renderAll();queueCloudSave();}catch(err){console.error(err);toast('Impossible d’enregistrer : espace de stockage indisponible. Exportez vos données.');}}
 function money(n,c=state.profile.currency){try{return new Intl.NumberFormat('fr-FR',{style:'currency',currency:c,maximumFractionDigits:2}).format(Number(n)||0);}catch{return new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(Number(n)||0)+' '+c;}}
 function getCurrencies(){
   try{return Intl.supportedValuesOf('currency').sort();}
