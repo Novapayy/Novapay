@@ -1,4 +1,4 @@
-const CACHE='nova-pay-final-v16';
+const CACHE='nova-pay-final-v19-10';
 const CORE=['./','./index.html','./styles.css','./app.js','./supabase-config.js','./manifest.webmanifest','./icon.svg','./login-support.jpg'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)));

@@ -17,15 +17,17 @@
 <div class="login-screen" id="loginScreen">
   <div class="login-glow glow-a"></div><div class="login-glow glow-b"></div>
   <div class="login-panel">
-    <div class="login-brand"><span class="login-brand-mark"><svg viewBox="0 0 40 40"><path d="M8 30V10l24 20V10"/></svg></span><span><b>nova<span>pay</span></b><small>VOTRE ESPACE FINANCIER</small></span></div>
-    <div class="login-visual"><div class="login-orbit orbit-one"></div><div class="login-orbit orbit-two"></div><div class="login-lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3M12 14v3"/></svg></div><span class="login-spark spark-one">✦</span><span class="login-spark spark-two">✧</span></div>
-    <div class="login-heading"><div class="login-eyebrow"><i></i> ACCÈS PERSONNEL SÉCURISÉ</div><h1>Ravi de vous<br>revoir.</h1><p>Connectez-vous pour retrouver votre espace Nova Pay.</p></div>
+    <div class="login-brand-row">
+      <div class="login-brand"><span class="login-brand-mark"><svg viewBox="0 0 40 40"><path d="M8 30V10l24 20V10"/></svg></span><span><b>nova<span>pay</span></b><small>VOTRE ESPACE FINANCIER</small></span></div>
+      <div class="login-visual" aria-hidden="true"><div class="login-orbit orbit-one"></div><div class="login-orbit orbit-two"></div><div class="login-lock"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3M12 14v3"/></svg></div><span class="login-spark spark-one">✦</span><span class="login-spark spark-two">✧</span></div>
+    </div>
+    <div class="login-heading"><div class="login-eyebrow"><i></i> LA BANQUE TOUJOURS ONLINE </div><h1>Ravi de vous<br>revoir.</h1><p>Connectez-vous pour retrouver votre espace Nova Pay.</p></div>
     <form id="loginForm" class="login-form" autocomplete="on">
       <label for="loginUser">Identifiant</label><div class="login-input-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input id="loginUser" name="username" autocomplete="username" placeholder="Votre identifiant" required></div>
       <label for="loginPassword">Mot de passe</label><div class="login-input-wrap"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 1 1 8 0v3"/></svg><input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="Votre mot de passe" required><button type="button" id="togglePassword" aria-label="Afficher le mot de passe">◉</button></div>
       <p class="login-error" id="loginError" role="alert"></p><button class="login-submit" type="submit">Accéder à mon espace <span>→</span></button>
     </form>
-    <div class="login-foot"><span>✦</span> Votre espace personnel · Nova Pay</div>
+    <div class="login-foot"><span></span>FLUIDE • SMART • SÉCURISÉE</div>
     <div class="login-progress" id="loginProgress" hidden aria-live="polite"><span class="login-spinner" id="loginSpinner"></span><b id="loginProgressTitle">Connexion en cours…</b><small id="loginProgressText">Préparation de votre espace personnel</small></div>
   </div>
   <div class="login-side-copy"><span>FINANCE, SIMPLIFIÉE.</span><p>Un espace clair.<br>Une expérience fluide.</p><small>Espace personnel · Nova Pay</small></div>
@@ -68,7 +70,7 @@
       <div class="topbar-right">
         <span class="local-chip"><i></i> En ligne</span>
         <button class="logout-btn" id="logoutBtn" title="Déconnexion"><i data-icon="log-out"></i><span>Déconnexion</span></button>
-        <div class="notification-wrap"><button class="icon-btn notification-btn" id="notifBtn" aria-label="Notifications" type="button"><i data-icon="bell"></i><em id="notifDot"></em></button><div class="notification-panel" id="notificationPanel" hidden></div></div>
+        <div class="notification-wrap"><button class="icon-btn notification-btn" id="notifBtn" aria-label="Notifications" type="button"><i data-icon="bell" aria-hidden="true"></i><span id="notifDot" class="notification-count" role="status" aria-live="polite" aria-atomic="true" hidden></span></button><div class="notification-panel" id="notificationPanel" hidden></div></div>
         <button class="user-menu" data-page="settings"><span class="avatar small" id="topAvatar">NP</span><span><b id="topName">Mon profil</b><small>Compte local</small></span><i data-icon="chevron-down"></i></button>
       </div>
     </header>
@@ -82,7 +84,7 @@
         <div class="hero-grid">
           <article class="balance-card">
             <div class="balance-head"><span>Solde en temps réel</span><button class="balance-eye" id="toggleBalance" aria-label="Masquer le solde"><i data-icon="eye"></i></button></div>
-            <div class="balance-number" id="balanceValue">0 FCFA</div>
+            <div class="balance-main-row"><div class="balance-number" id="balanceValue">0 FCFA</div><div id="fundPendingSummary" class="fund-pending-summary" hidden></div></div>
             <div class="balance-bottom"><span class="live-dot"></span> Solde actualisé en temps réel <span class="balance-separator">·</span><span id="accountLabel">Compte Nova Pay</span></div>
             <div class="orb orb-one"></div><div class="orb orb-two"></div>
             <div class="hero-brand">N<span>P</span></div>
@@ -144,7 +146,7 @@
 
       <section class="page" id="activity">
         <div class="page-title row-title"><div><div class="overline">VOTRE HISTORIQUE</div><h1>Mes opérations</h1><p>Consultez, filtrez et exportez vos transactions.</p></div><button class="outline-btn" id="exportCsv"><i data-icon="download"></i> Exporter CSV</button></div>
-        <div class="filter-bar"><div class="search-box"><i data-icon="search"></i><input id="activitySearch" placeholder="Rechercher une opération…"></div><select id="activityFilter"><option value="all">Tous les statuts</option><option value="completed">Simulés</option></select></div>
+        <div class="filter-bar"><div class="search-box"><i data-icon="search"></i><input id="activitySearch" placeholder="Rechercher une opération…"></div><select id="activityFilter"><option value="all">Tous les statuts</option><option value="pending">En attente</option><option value="completed">Terminés / crédités</option></select></div>
         <div class="table-wrap"><table><thead><tr><th>OPÉRATION</th><th>BÉNÉFICIAIRE / MOTIF</th><th>DATE</th><th>STATUT</th><th class="align-right">MONTANT</th></tr></thead><tbody id="activityRows"></tbody></table><div class="empty-table" id="activityEmpty"><span class="empty-illustration"><i data-icon="history"></i></span><b>Aucun résultat</b><p>Vos opérations simulées apparaîtront ici.</p></div></div>
       </section>
 
